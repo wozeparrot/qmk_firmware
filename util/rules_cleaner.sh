@@ -32,7 +32,7 @@ set_sed_i
 # Exclude keyamps/ directories
 files=$(find keyboards -type f -name 'rules.mk' -not \( -path '*/keymaps*' -prune \))
 
-# Edit rules.mk files 
+# Edit rules.mk files
 for file in $files; do
   sed "${sed_i[@]}" -e "s/(+[0-9].*)$//g" "$file"
 done

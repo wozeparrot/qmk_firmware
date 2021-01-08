@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 # NOTE: This script uses tabs for indentation
 
 errcho() {

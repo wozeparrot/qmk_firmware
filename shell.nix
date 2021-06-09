@@ -73,7 +73,7 @@ in
           [clang-tools dfu-programmer dfu-util diffutils git pythonEnv niv]
           ++ lib.optional avr [
             pkgsCross.avr.buildPackages.binutils
-            pkgsCross.avr.buildPackages.gcc
+            pkgsCross.avr.buildPackages.gcc8
             avrlibc
             avrdude
           ]

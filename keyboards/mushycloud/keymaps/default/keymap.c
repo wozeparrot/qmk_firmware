@@ -14,13 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include QMK_KEYBOARD_H
+#include <stdio.h>
 
 // Defines names for use in layer keycodes and the keymap
 enum layer_names {
     _QWERTY,
     _LOWER,
     _RAISE,
-    _FN
+    _FN,
+    _MOUSE
 };
 
 // Defines the keycodes used by our macros in process_record_user
@@ -28,7 +30,19 @@ enum custom_keycodes {
     QWERTY = SAFE_RANGE,
     LOWER,
     RAISE,
-    FN
+    FN,
+    MOUSE
+};
+
+// Declares tapdance keys
+enum {
+    TD_ESC_CAPS,
+};
+
+// Tap Dance definitions
+qk_tap_dance_action_t tap_dance_actions[] = {
+    // Tap once for Escape, twice for Caps Lock
+    [TD_ESC_CAPS] = ACTION_TAP_DANCE_DOUBLE(KC_ESC, KC_CAPS),
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -36,29 +50,43 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_LPRN,    KC_RPRN,  KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,                 \
         KC_LSFT, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_LBRC,    KC_RBRC,  KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN,  KC_BSPC,    \
         KC_LCTL, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_TAB,     FN,       KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,  KC_ENT,     \
-                                   KC_ESC,  KC_LGUI, LOWER,   KC_SPC,     KC_SPC,   RAISE,   KC_RGUI, KC_LALT                               \
+                  TD(TD_ESC_CAPS), KC_LGUI, LOWER,   KC_SPC,  MOUSE,      KC_LEAD,  KC_SPC,  RAISE,   KC_RGUI, KC_LALT                        \
     ),
     [_LOWER] = LAYOUT(
                  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_TRNS,    KC_TRNS,  KC_6,    KC_7,    KC_8,    KC_9,    KC_0,                 \
         KC_TRNS, KC_GRV,  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,    KC_TRNS,  KC_TRNS, KC_TRNS, KC_QUOT, KC_MINS, KC_EQL,   KC_TRNS,    \
         KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,    KC_TRNS,  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,  KC_BSLS,    \
-                                   KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,    KC_TRNS,  KC_TRNS, KC_TRNS, KC_TRNS                                 \
+                          KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,    KC_LEAD,  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS                        \
     ),
     [_RAISE] = LAYOUT(
                  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_TRNS,    KC_TRNS,  KC_6,    KC_7,    KC_8,    KC_9,    KC_0,                 \
         KC_TRNS, KC_GRV,  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,    KC_TRNS,  KC_TRNS, KC_TRNS, KC_QUOT, KC_MINS, KC_EQL,   KC_TRNS,    \
         KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,    KC_TRNS,  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,  KC_BSLS,    \
-                                   KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,    KC_TRNS,  KC_TRNS, KC_TRNS, KC_TRNS                                 \
+                          KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,    KC_LEAD,  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS                        \
     ),
     [_FN] = LAYOUT(
                  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,      KC_F7,    KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,               \
         KC_TRNS, KC_MPLY, KC_VOLD, KC_VOLU, KC_MUTE, KC_TRNS, KC_TRNS,    KC_HOME,  KC_PGUP, KC_END,  KC_UP,   KC_TRNS, KC_TRNS,  KC_PSCR,    \
         KC_TRNS, KC_MPRV, KC_MNXT, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,    KC_TRNS,  KC_PGDN, KC_LEFT, KC_DOWN, KC_RIGHT,KC_TRNS,  KC_DEL,     \
-                                   KC_LALT, KC_TRNS, KC_TRNS, KC_TRNS,    KC_TRNS,  KC_TRNS, KC_TRNS, KC_RALT                                 \
+                          KC_LALT, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,    KC_LEAD,  KC_TRNS, KC_TRNS, KC_TRNS, KC_RALT                        \
     ),
+    [_MOUSE] = LAYOUT(
+                 KC_TRNS, KC_ACL0, KC_ACL1, KC_ACL2, KC_TRNS, KC_TRNS,    KC_TRNS,  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,              \
+        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,    KC_TRNS,  KC_WH_U, KC_BTN1, KC_MS_U, KC_BTN2, KC_TRNS,  KC_TRNS,    \
+        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,    KC_TRNS,  KC_WH_D, KC_MS_L, KC_MS_D, KC_MS_R, KC_TRNS,  KC_TRNS,    \
+                          KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,    KC_LEAD,  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS                        \
+    ) 
 };
 
+uint8_t current_kps = 0;
+uint16_t kps_timer = 0;
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    if (kps_timer > 0) {
+        uint8_t latest_kps = 1000 / timer_elapsed(kps_timer);
+        current_kps = (latest_kps - current_kps) * 0.0487 + current_kps;
+    }
+    kps_timer = timer_read();
+
     switch (keycode) {
         case QWERTY:
             if (record->event.pressed) {
@@ -94,11 +122,52 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             }
             return false;
         break;
+        case MOUSE:
+            if (record->event.pressed) {
+                layer_on(_MOUSE);
+            } else {
+                layer_off(_MOUSE);
+            }
+            return false;
+        break;
     }
+
     return true;
 }
 
-#ifdef OLED_DRIVER_ENABLE
+LEADER_EXTERNS();
+
+void matrix_scan_user(void) {
+    LEADER_DICTIONARY() {
+        leading = false;
+        leader_end();
+
+        SEQ_ONE_KEY(KC_W) {
+            SEND_STRING("wozeparrot");
+        }
+        SEQ_ONE_KEY(KC_B) {
+            SEND_STRING("baka baka baka" SS_LSFT(SS_TAP(X_ENT)) "baka baka baka" SS_LSFT(SS_TAP(X_ENT)) "baka baka baka\n");
+        }
+        
+        SEQ_TWO_KEYS(KC_S, KC_G) {
+            SEND_STRING(SS_LCTL("t") "github.com\n");
+        }
+        SEQ_TWO_KEYS(KC_S, KC_R) {
+            SEND_STRING(SS_LCTL("t") "reddit.com\n");
+        }
+        SEQ_TWO_KEYS(KC_S, KC_H) {
+            SEND_STRING(SS_LCTL("t") "news.ycombinator.com\n");
+        }
+        SEQ_TWO_KEYS(KC_S, KC_C) {
+            SEND_STRING(SS_LCTL("t") "4chan.org\n");
+        }
+        
+        SEQ_ONE_KEY(KC_L) {
+            SEND_STRING(SS_LGUI(SS_TAP(X_ENT)) SS_DELAY(1000) "waylock0\n");
+        }
+    }
+}
+
 void render_dd(void) {
     static const char PROGMEM logo[] = {
         // 'qmktest1dd', 32x32px
@@ -163,42 +232,20 @@ void render_fn(void) {
     oled_write_raw_P(logo, sizeof(logo));
 }
 
-void render_logo(void) {
-    static const char PROGMEM logo[] = {
-// '320px-NixOS_logo', 32x96px
-0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40, 0x60, 0xe0, 0xe0, 0xe0, 0xc0, 0xfc, 0xfc,
-0xfc, 0xfc, 0x00, 0x00, 0x00, 0xe0, 0xe0, 0xc0, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-0x00, 0x00, 0x86, 0xce, 0xce, 0xfe, 0xfc, 0xfc, 0x78, 0xf8, 0xfc, 0x3c, 0x1f, 0x0d, 0x0f, 0x07,
-0x07, 0x0f, 0x0e, 0x1e, 0x1c, 0xff, 0xff, 0xff, 0x7c, 0x1c, 0x1e, 0x0e, 0x0e, 0x06, 0x00, 0x00,
-0x00, 0x00, 0x83, 0x83, 0xc3, 0xe1, 0xe0, 0xf0, 0xff, 0xff, 0xff, 0xe0, 0xe0, 0xc0, 0xc0, 0x80,
-0x00, 0xc0, 0xc0, 0xe0, 0xe0, 0xff, 0x7f, 0x7f, 0xfc, 0xfc, 0xfe, 0xce, 0x8f, 0x87, 0x00, 0x00,
-0x00, 0x00, 0x01, 0x03, 0x03, 0x01, 0x00, 0x00, 0x0f, 0x1f, 0x1f, 0x00, 0x01, 0x03, 0xf3, 0xff,
-0xff, 0xff, 0x0f, 0x1f, 0x3c, 0x3c, 0x18, 0x00, 0x00, 0x00, 0x01, 0x03, 0x03, 0x01, 0x00, 0x00,
-0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80,
-0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x81, 0xc1, 0xc1, 0xe1, 0x71,
-0x31, 0x39, 0x19, 0x0d, 0x0f, 0x07, 0x03, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0e, 0x0f, 0x0f, 0x0d, 0x0d, 0x0c, 0x0c, 0x0c,
-0x0c, 0x0c, 0x0c, 0x0c, 0x0c, 0x0c, 0x8c, 0x0c, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x63, 0x63, 0xc3, 0x83, 0x83, 0x03, 0x03, 0x83,
-0xc3, 0xe3, 0x63, 0x00, 0x00, 0x03, 0x03, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x30, 0x38, 0x1c, 0x0d, 0x07, 0x07, 0x07, 0x8d,
-0x1c, 0x18, 0x30, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xf0, 0xf8, 0x0e, 0x06, 0x03, 0x03, 0x03, 0x03, 0x03,
-0x03, 0x03, 0x03, 0x03, 0x06, 0x0e, 0xf8, 0xf0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x81, 0xc7, 0x0e, 0x1c, 0x18, 0x18, 0x30, 0x30, 0x30,
-0x30, 0xb0, 0x98, 0x98, 0x9c, 0x8e, 0x07, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0f, 0x3f, 0x70, 0x60, 0xc0, 0xe0, 0xe0, 0x78, 0x3e,
-0x0f, 0x03, 0x01, 0x01, 0x01, 0x03, 0x7f, 0x7e, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-    };
-
-    oled_write_raw_P(logo, sizeof(logo));
+void oled_next_line(void) {
+    oled_advance_char();
+    oled_advance_char();
+    oled_advance_char();
+    oled_advance_char();
+    oled_advance_char();
 }
 
 oled_rotation_t oled_init_user(oled_rotation_t rotation) {
-    return OLED_ROTATION_90;
+    return OLED_ROTATION_270;
 }
 
+char kps_str[6];
+char wpm_str[6];
 void oled_task_user(void) {
     switch (get_highest_layer(layer_state)) {
         case _QWERTY:
@@ -213,28 +260,31 @@ void oled_task_user(void) {
         case _LOWER:
         render_ll();
         break;
+        case _MOUSE:
+        render_dd();
+        oled_set_cursor(0, 0);
+        render_fn();
+        oled_render();
+        break;
     }
 
-    oled_advance_char();
-    oled_advance_char();
-    oled_advance_char();
-    oled_advance_char();
-    oled_advance_char();
-    oled_advance_char();
-    oled_advance_char();
-    oled_advance_char();
-    oled_advance_char();
-    oled_advance_char();
-    oled_advance_char();
-    oled_advance_char();
-    oled_advance_char();
-    oled_advance_char();
-    oled_advance_char();
-    oled_advance_char();
-    oled_advance_char();
-    oled_advance_char();
-    oled_advance_char();
-    oled_advance_char();
-    render_logo();
+    oled_set_cursor(0, 5);
+
+    led_t led_state = host_keyboard_led_state();
+    oled_write_P(led_state.caps_lock ? PSTR(" CAP ") : PSTR("-----"), false);
+
+    oled_next_line();
+
+    sprintf(kps_str, "|%03d|", current_kps);
+    oled_write(kps_str, false);
+
+    if (timer_elapsed(kps_timer) > 1000) {
+        current_kps = (0 - current_kps) * 0.0487 + current_kps;
+        kps_timer = timer_read();
+    }
+
+    oled_next_line();
+
+    sprintf(wpm_str, "|%03d|", get_current_wpm());
+    oled_write(wpm_str, false);
 }
-#endif

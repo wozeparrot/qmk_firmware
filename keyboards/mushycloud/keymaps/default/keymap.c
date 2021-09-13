@@ -34,11 +34,6 @@ enum custom_keycodes {
     MOUSE
 };
 
-// Declares tapdance keys
-enum {
-    TD_ESC_CAPS,
-};
-
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_QWERTY] = LAYOUT(
                  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_LPRN,    KC_RPRN,  KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,                 \

@@ -70,13 +70,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 uint8_t current_kps = 0;
 uint16_t kps_timer = 0;
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-    if (record->event.pressed) {
-        if (kps_timer > 0) {
-            uint8_t latest_kps = 1000 / timer_elapsed(kps_timer);
-            current_kps = (latest_kps - current_kps) * 0.0487 + current_kps;
-        }
-        kps_timer = timer_read();
+    if (kps_timer > 0) {
+        uint8_t latest_kps = 1000 / timer_elapsed(kps_timer);
+        current_kps = (latest_kps - current_kps) * 0.0487 + current_kps;
     }
+    kps_timer = timer_read();
 
     switch (keycode) {
         case QWERTY:
@@ -137,7 +135,7 @@ void matrix_scan_user(void) {
             SEND_STRING("The quick brown fox jumps over the lazy dog");
         }
         SEQ_ONE_KEY(KC_C) {
-            SEND_STRING("--- wozeparrot ---\nDiscord: wozeparrot#7777\nEmail: wozeparrot@gmail.com\nGithub: wozeparrot\nReddit: wozeparrot\n--- ---------- ---\n");
+            SEND_STRING("--- Contact ---\nDiscord: wozeparrot#6403\nEmail: wozeparrot@gmail.com\nGithub: wozeparrot\n--- ------- ---\n");
         }
         
         SEQ_TWO_KEYS(KC_S, KC_G) {
@@ -263,11 +261,6 @@ void oled_task_user(void) {
     }
 
     oled_set_cursor(0, 5);
-
-    led_t led_state = host_keyboard_led_state();
-    oled_write_P(led_state.caps_lock ? PSTR(" CAP ") : PSTR("-----"), false);
-
-    oled_next_line();
 
     sprintf(kps_str, "|%03d|", current_kps);
     oled_write(kps_str, false);
